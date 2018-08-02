@@ -4,20 +4,19 @@ import PropTypes from 'prop-types'
 import './App.css'
 import * as BooksAPI from './BooksAPI'
 import BookContent from './BookContent.js'
-// import If from './If.js'
 
 class SearchBook extends Component {
   constructor() {
     super();
     this.state = {
-      searchList: [],
-      hasError: false
+      searchList: []
     }
     this.searchBook = this.searchBook.bind(this);
     this.handleChange = this.handleChange.bind(this);
   }
 
   static propTypes = {
+    bookList: PropTypes.array.isRequired,
     onUpdateBookShelf: PropTypes.func.isRequired
   }
 
@@ -25,15 +24,22 @@ class SearchBook extends Component {
     this.searchBook(event.target.value);
   }
 
-  componentDidCatch(error, info) {
-    this.setState({ hasError: true });
-  }
-
   //search for books that match the search text
   searchBook(text) {
     if (typeof text !== "undefined") {
       BooksAPI.search(text).then((data) => {
         if (typeof data !== "undefined" && typeof data.length !== "undefined") {
+          //verifying books to match in both pages
+          data.forEach((book) => {
+            this.props.bookList.forEach((bl) => {
+              if (book.id === bl.id)
+                book.shelf = bl.shelf;
+              else if (typeof book.shelf === "undefined")
+                book.shelf = "none";
+            });
+            console.log(book.shelf);
+          });
+
           this.setState({searchList: data});
         }
         else {
@@ -73,19 +79,15 @@ class SearchBook extends Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-          {this.state.hasError ?
-          (
-            <div>
-              No results...
-            </div>
-          ) :
-          (
-            <BookContent
-              bookList={this.state.searchList}
-              onUpdateBookShelf={onUpdateBookShelf}
-              defaultShelf='none'
-            />
-          )}
+            {
+              this.state.searchList.map(book => (
+                <BookContent
+                  key={book.id}
+                  book={book}
+                  onUpdateBookShelf={onUpdateBookShelf}
+                />
+              ))
+            }
           </ol>
         </div>
       </div>

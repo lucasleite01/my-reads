@@ -12,7 +12,6 @@ class BooksList extends Component {
 
   render() {
     const {bookList, listTitle, onUpdateBookShelf} = this.props
-    //let currentlyReadingBooks = this.props.bookList.filter(book => book.shelf === 'currentlyReading')
     return (
       <div>
         <div className="list-books-content">
@@ -28,11 +27,15 @@ class BooksList extends Component {
               </h2>
               <div className="bookshelf-books">
                 <ol className="books-grid">
-                  <BookContent
-                    bookList={bookList.filter(book => book.shelf === listTitle)}
-                    onUpdateBookShelf={onUpdateBookShelf}
-                    defaultShelf={listTitle}
-                  />
+                {
+                  bookList.filter(book => book.shelf === listTitle).map(book => (
+                    <BookContent
+                      key={book.id}
+                      book={book}
+                      onUpdateBookShelf={onUpdateBookShelf}
+                    />
+                  ))
+                }
                 </ol>
               </div>
             </div>
