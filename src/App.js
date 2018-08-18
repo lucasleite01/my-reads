@@ -16,7 +16,7 @@ class BooksApp extends React.Component {
   }
 
   //get all the books from the server and store at BookList state
-  componentWillMount() {
+  componentDidMount() {
     BooksAPI.getAll().then((data) => {
       this.setState({ bookList: data });
     })
